@@ -84,6 +84,13 @@ public class MainActivity extends Activity implements View.OnClickListener {
     }
 
     private final BluetoothAdapter.LeScanCallback mScanCallback = new BluetoothAdapter.LeScanCallback() {
+        /**
+         * ui线程，不要做耗时操作
+         *
+         * @param device
+         * @param rssi 信号强度
+         * @param scanRecord 广播数据，解析广播
+         */
         @Override
         public void onLeScan(BluetoothDevice device, int rssi, byte[] scanRecord) {
             ScanResult result = new ScanResult(device, rssi, scanRecord);
@@ -111,6 +118,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
         }
 
         if (!mScaning) {
+            //开始扫描
             if (!adapter.startLeScan(mScanCallback)) {
                 Toast.makeText(this, "Scan failed", Toast.LENGTH_SHORT).show();
             } else {

@@ -109,6 +109,8 @@ public class TestActivity extends Activity {
             @Override
             public void onCharacteristicRead(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
                 Log.v(TAG, String.format("onCharacteristicRead: service = %s, character = %s, value = %s, status = %d",
+//                        在binlder线程
+
                         characteristic.getService().getUuid(),
                         characteristic.getUuid(),
                         ByteUtils.byteToString(characteristic.getValue()),
@@ -122,7 +124,7 @@ public class TestActivity extends Activity {
                         characteristic.getUuid(),
                         status));
             }
-
+            //获取通知消息 binder线程，多线程同步的问题
             @Override
             public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
                 Log.v(TAG, String.format("onCharacteristicChanged service = %s, character = %s, value = %s",
@@ -160,10 +162,16 @@ public class TestActivity extends Activity {
         return gatt;
     }
 
+    /**
+     * 读写操作  异步的
+     * @param gatt
+     */
     private void testRead(BluetoothGatt gatt) {
         BluetoothGattService service = gatt.getService(UUIDUtils.makeUUID(0xA7C9));
         mCharacter = service.getCharacteristic(UUIDUtils.makeUUID(0x01));
-        gatt.readCharacteristic(mCharacter);
+        //发起读请求 ，返回true 就可以读写
+        boolean b = gatt.readCharacteristic(mCharacter);
+
     }
 
     private void refreshProfile(BluetoothGatt gatt) {

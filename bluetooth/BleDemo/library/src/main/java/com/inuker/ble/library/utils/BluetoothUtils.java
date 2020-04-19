@@ -68,13 +68,21 @@ public class BluetoothUtils {
         return service != null ? service.getCharacteristic(characterUUID) : null;
     }
 
+    /**
+     * 蓝牙通知 设备推送数据 手机端
+     * @param gatt
+     * @param service uuid
+     * @param character uuid
+     * @param enable 打开通知，还是关闭通知
+     * @return
+     */
     public static boolean setCharacteristicNotification(BluetoothGatt gatt, UUID service, UUID character, boolean enable) {
         BluetoothGattCharacteristic characteristic = getCharacter(gatt, service, character);
 
         if (characteristic == null) {
             return false;
         }
-
+        //打开通知 同步调用，没有回调 如果失败，看是否打开了通知
         if (!gatt.setCharacteristicNotification(characteristic, enable)) {
             return false;
         }
@@ -91,7 +99,7 @@ public class BluetoothUtils {
         if (!descriptor.setValue(value)) {
             return false;
         }
-
+        //异步操作
         if (!gatt.writeDescriptor(descriptor)) {
             return false;
         }
